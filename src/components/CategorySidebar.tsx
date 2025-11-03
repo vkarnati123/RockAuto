@@ -1,0 +1,43 @@
+import { Wrench, Zap, Gauge, Droplet, Lightbulb, Wind } from 'lucide-react';
+
+const categories = [
+  { id: 1, name: 'Engine Parts', icon: Wrench },
+  { id: 2, name: 'Electrical', icon: Zap },
+  { id: 3, name: 'Brakes', icon: Gauge },
+  { id: 4, name: 'Fluids & Oils', icon: Droplet },
+  { id: 5, name: 'Lighting', icon: Lightbulb },
+  { id: 6, name: 'Climate Control', icon: Wind },
+];
+
+interface CategorySidebarProps {
+  onCategorySelect: (categoryName: string) => void;
+  selectedCategory: string | null;
+}
+
+export function CategorySidebar({ onCategorySelect, selectedCategory }: CategorySidebarProps) {
+  return (
+    <aside className="hidden md:block w-[100px] bg-white border-r border-gray-200 py-6 px-5">
+      <div className="flex flex-col gap-6">
+        {categories.map((category) => {
+          const Icon = category.icon;
+          const isSelected = selectedCategory === category.name;
+          
+          return (
+            <button
+              key={category.id}
+              onClick={() => onCategorySelect(category.name)}
+              className={`bg-white rounded-lg size-[60px] border-2 shadow-sm flex items-center justify-center transition-all ${
+                isSelected 
+                  ? 'border-[#6366f1] bg-[#6366f1] text-white' 
+                  : 'border-gray-200 text-gray-700 hover:border-[#6366f1] hover:text-[#6366f1]'
+              }`}
+              title={category.name}
+            >
+              <Icon className="w-7 h-7" />
+            </button>
+          );
+        })}
+      </div>
+    </aside>
+  );
+}
