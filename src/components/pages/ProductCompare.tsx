@@ -1,6 +1,6 @@
 import { ArrowLeft, Plus, X, ShoppingCart } from 'lucide-react';
-import { Product } from './ProductCard';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Product } from '../ProductCard';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 interface ProductCompareProps {
   products: Product[];
@@ -48,6 +48,7 @@ export function ProductCompare({
   }
 
   return (
+    
     <div className="flex-1 bg-white">
       {/* Header Section */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">

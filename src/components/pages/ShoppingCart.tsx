@@ -1,6 +1,6 @@
 import { X, Lock, Car, ShoppingBag, ArrowLeft, ChevronDown, Truck, Shield, Tag, AlertCircle } from 'lucide-react';
-import { Product } from './ProductCard';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Product } from '../ProductCard';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { Vehicle } from './Garage';
 import { useState } from 'react';
 

@@ -1,23 +1,29 @@
 import { useState, useEffect } from 'react';
+import { CartProvider, useCart } from './contexts/CartContext';
+import { CompareProvider, useCompare } from './contexts/CompareContext';
 import { Header } from './components/Header';
 import { CategorySidebar } from './components/CategorySidebar';
 import { FeaturedCarousel } from './components/FeaturedCarousel';
 import { ProductGrid } from './components/ProductGrid';
 import { DealsSection } from './components/DealsSection';
-import { ProductDetail } from './components/ProductDetail';
-import { ProductCompare } from './components/ProductCompare';
-import { ShoppingCart, CartItem } from './components/ShoppingCart';
-import { AdvancedSearch } from './components/AdvancedSearch';
-import { Login } from './components/Login';
-import { SignUp } from './components/SignUp';
-import { ForgotPassword } from './components/ForgotPassword';
-import { Garage, Vehicle } from './components/Garage';
-import { WelcomeUser } from './components/WelcomeUser';
-import { CheckoutContact, ContactInfo } from './components/CheckoutContact';
-import { CheckoutPayment, PaymentInfo } from './components/CheckoutPayment';
-import { OrderConfirmation } from './components/OrderConfirmation';
 import { Product } from './components/ProductCard';
-import { toast, Toaster } from 'sonner@2.0.3';
+import { toast, Toaster } from 'sonner';
+
+
+
+import { ForgotPassword } from './components/pages/ForgotPassword';
+import { SignUp } from './components/pages/SignUp';
+import { CheckoutContact, ContactInfo } from './components/pages/CheckoutContact';
+import { Garage, Vehicle } from './components/pages/Garage';
+import { AdvancedSearch } from './components/pages/AdvancedSearch';
+import { ShoppingCart, CartItem } from './components/pages/ShoppingCart';
+import { WelcomeUser } from './components/pages/WelcomeUser';
+import { Login } from './components/pages/Login';
+import { CheckoutPayment, PaymentInfo } from './components/pages/CheckoutPayment';
+import { OrderConfirmation } from './components/pages/OrderConfirmation';
+import { ProductDetail } from './components/pages/ProductDetail';
+import { ProductCompare } from './components/pages/ProductCompare';
+
 
 // Mock product data
 const allProducts: Product[] = [
@@ -135,15 +141,16 @@ const allProducts: Product[] = [
   },
 ];
 
-type ViewMode = 'list' | 'detail' | 'compare' | 'cart' | 'advancedSearch' | 'login' | 'signup' | 'forgotPassword' | 'garage' | 'welcome' | 'checkoutContact' | 'checkoutPayment' | 'orderConfirmation';
+type ViewMode = 'home' | 'detail' | 'compare' | 'cart' | 'advancedSearch' | 'login' | 'signup' | 'forgotPassword' | 'garage' | 'welcome' | 'checkoutContact' | 'checkoutPayment' | 'orderConfirmation';
 
-export default function App() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+function AppInner() {
+  const { cartItems, addToCart, updateQuantity, removeFromCart, clearCart, totalItems } = useCart();
+  const { compareList, addToCompare, removeFromCompare, clearCompare, compareCount } = useCompare();
+  
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [compareList, setCompareList] = useState<Product[]>([]);
-  const [viewMode, setViewMode] = useState<ViewMode>('welcome');
+  const [viewMode, setViewMode] = useState<ViewMode>('home');
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
   const [userName, setUserName] = useState<string>('Guest');
@@ -155,47 +162,13 @@ export default function App() {
   // Reset compare list when navigating away from compare page
   useEffect(() => {
     if (viewMode !== 'compare' && compareList.length > 0) {
-      setCompareList([]);
+      clearCompare();
     }
   }, [viewMode]);
 
-  const handleAddToCart = (product: Product) => {
-    const existingItem = cartItems.find(item => item.product.id === product.id);
-    
-    if (existingItem) {
-      setCartItems(cartItems.map(item =>
-        item.product.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-      toast.success(`Added another ${product.name} to cart!`, {
-        duration: 2000,
-      });
-    } else {
-      setCartItems([...cartItems, { product, quantity: 1 }]);
-      toast.success(`${product.name} added to cart!`, {
-        duration: 2000,
-      });
-    }
-  };
-
-  const handleUpdateQuantity = (productId: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    
-    setCartItems(cartItems.map(item =>
-      item.product.id === productId
-        ? { ...item, quantity: newQuantity }
-        : item
-    ));
-  };
-
-  const handleRemoveFromCart = (productId: number) => {
-    const item = cartItems.find(i => i.product.id === productId);
-    setCartItems(cartItems.filter(i => i.product.id !== productId));
-    if (item) {
-      toast.info(`${item.product.name} removed from cart`);
-    }
-  };
+  const handleAddToCart = (product: Product) => addToCart(product);
+  const handleUpdateQuantity = (productId: number, newQuantity: number) => updateQuantity(productId, newQuantity);
+  const handleRemoveFromCart = (productId: number) => removeFromCart(productId);
 
   const handleShowCart = () => {
     setViewMode('cart');
@@ -203,7 +176,7 @@ export default function App() {
   };
 
   const handleContinueShopping = () => {
-    setViewMode('list');
+    setViewMode('home');
     window.scrollTo(0, 0);
   };
 
@@ -238,7 +211,7 @@ export default function App() {
     
     // Clear cart after order is placed
     setTimeout(() => {
-      setCartItems([]);
+      clearCart();
     }, 100);
   };
 
@@ -265,7 +238,7 @@ export default function App() {
     setSearchQuery(query);
     setSelectedCategory(null);
     if (query) {
-      setViewMode('list');
+      setViewMode('home');
       window.scrollTo(0, 0);
     }
   };
@@ -276,9 +249,9 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  const handleBackToList = () => {
+  const handleBackToHome = () => {
     setSelectedProduct(null);
-    setViewMode('list');
+    setViewMode('home');
   };
 
   const handleAddToCompare = (product: Product) => {
@@ -290,53 +263,45 @@ export default function App() {
       toast.error('Maximum 3 products can be compared at once');
       return;
     }
-    
-    const newCompareList = [...compareList, product];
-    setCompareList(newCompareList);
-    
-    // If this is the first product added from detail view, scroll to similar products
+
+    // Keep the same UX: check current length to decide navigation/toasts
     if (compareList.length === 0 && viewMode === 'detail') {
-      toast.success(`${product.name} added! Select another product to compare`, {
-        duration: 3000,
-      });
-      // Scroll to similar products section
+      toast.success(`${product.name} added! Select another product to compare`, { duration: 3000 });
+      // add and scroll
+      addToCompare(product);
       setTimeout(() => {
         const similarSection = document.getElementById('similar-products');
-        if (similarSection) {
-          similarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        if (similarSection) similarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
-    } 
-    // If this is the second product, go directly to compare page
-    else if (compareList.length === 1) {
-      toast.success(`${product.name} added! Opening comparison...`, {
-        duration: 2000,
-      });
+      return;
+    }
+
+    if (compareList.length === 1) {
+      toast.success(`${product.name} added! Opening comparison...`, { duration: 2000 });
+      addToCompare(product);
       setTimeout(() => {
         setViewMode('compare');
         window.scrollTo(0, 0);
       }, 500);
-    } 
-    // Third product added from compare page
-    else if (compareList.length === 2) {
-      toast.success(`${product.name} added to comparison!`, {
-        duration: 2000,
-      });
-      // Scroll to top to see all three products
+      return;
+    }
+
+    if (compareList.length === 2) {
+      toast.success(`${product.name} added to comparison!`, { duration: 2000 });
+      addToCompare(product);
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 100);
+      return;
     }
-    // First product from non-detail view
-    else {
-      toast.success(`${product.name} added to comparison!`, {
-        duration: 2000,
-      });
-    }
+
+    // Default: just add and toast
+    addToCompare(product);
+    toast.success(`${product.name} added to comparison!`, { duration: 2000 });
   };
 
   const handleRemoveFromCompare = (productId: number) => {
-    setCompareList(compareList.filter(p => p.id !== productId));
+    removeFromCompare(productId);
     toast.info('Product removed from comparison');
   };
 
@@ -346,7 +311,7 @@ export default function App() {
   };
 
   const handleBackFromCompare = () => {
-    setViewMode('list');
+    setViewMode('home');
     setSelectedProduct(null);
   };
 
@@ -356,12 +321,12 @@ export default function App() {
   };
 
   const handleBackFromAdvancedSearch = () => {
-    setViewMode('list');
+    setViewMode('home');
     window.scrollTo(0, 0);
   };
 
   const handleLogoClick = () => {
-    setViewMode('welcome');
+    setViewMode('home');
     setSelectedProduct(null);
     setSelectedCategory(null);
     setSearchQuery('');
@@ -369,7 +334,7 @@ export default function App() {
   };
 
   const handleBrowseProducts = () => {
-    setViewMode('list');
+    setViewMode('home');
     window.scrollTo(0, 0);
   };
 
@@ -394,7 +359,7 @@ export default function App() {
   };
 
   const handleBackFromAuth = () => {
-    setViewMode('list');
+    setViewMode('home');
     window.scrollTo(0, 0);
   };
 
@@ -493,7 +458,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -511,7 +476,7 @@ export default function App() {
           <CategorySidebar
             onCategorySelect={(category) => {
               handleCategorySelect(category);
-              setViewMode('list');
+              setViewMode('home');
             }}
             selectedCategory={selectedCategory}
           />
@@ -540,7 +505,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -567,7 +532,7 @@ export default function App() {
             onUpdateVehicle={handleUpdateVehicle}
             onDeleteVehicle={handleDeleteVehicle}
             onSetDefault={handleSetDefaultVehicle}
-            onBack={handleBackToList}
+            onBack={handleBackToHome}
           />
         </div>
       </div>
@@ -584,7 +549,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -615,7 +580,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -645,7 +610,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -675,7 +640,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -709,7 +674,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -756,7 +721,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -789,7 +754,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -823,7 +788,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -859,7 +824,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -894,7 +859,7 @@ export default function App() {
         <Header 
           cartItemCount={totalCartItems}
           onSearch={handleSearch}
-          compareCount={compareList.length}
+          compareCount={compareCount}
           onCompareClick={handleShowCompare}
           onCartClick={handleShowCart}
           onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -917,7 +882,7 @@ export default function App() {
           {/* Product Detail */}
           <ProductDetail
             product={selectedProduct}
-            onBack={handleBackToList}
+            onBack={handleBackToHome}
             onAddToCart={handleAddToCart}
             similarProducts={similarProducts}
             onProductClick={handleProductClick}
@@ -936,7 +901,7 @@ export default function App() {
       <Header 
         cartItemCount={totalCartItems}
         onSearch={handleSearch}
-        compareCount={compareList.length}
+        compareCount={compareCount}
         onCompareClick={handleShowCompare}
         onCartClick={handleShowCart}
         onAdvancedSearchClick={handleShowAdvancedSearch}
@@ -989,5 +954,15 @@ export default function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <CartProvider>
+      <CompareProvider>
+        <AppInner />
+      </CompareProvider>
+    </CartProvider>
   );
 }

@@ -16,8 +16,8 @@ interface CategorySidebarProps {
 
 export function CategorySidebar({ onCategorySelect, selectedCategory }: CategorySidebarProps) {
   return (
-    <aside className="w-[100px] bg-white border-r border-gray-200 py-6 px-5">
-      <div className="flex flex-col gap-6">
+    <aside className="w-[80px] bg-white border-r border-gray-200 py-4 px-3">
+      <div className="flex flex-col gap-4">
         {categories.map((category) => {
           const Icon = category.icon;
           const isSelected = selectedCategory === category.name;
@@ -26,14 +26,14 @@ export function CategorySidebar({ onCategorySelect, selectedCategory }: Category
             <button
               key={category.id}
               onClick={() => onCategorySelect(category.name)}
-              className={`bg-white rounded-lg size-[60px] border-2 shadow-sm flex items-center justify-center transition-all ${
+              className={`bg-white rounded-lg w-12 h-12 border-2 shadow-sm flex items-center justify-center transition-all ${
                 isSelected 
                   ? 'border-[#6366f1] bg-[#6366f1] text-white' 
                   : 'border-gray-200 text-gray-700 hover:border-[#6366f1] hover:text-[#6366f1]'
               }`}
               title={category.name}
             >
-              <Icon className="w-7 h-7" />
+              <Icon className="w-5 h-5" />
             </button>
           );
         })}

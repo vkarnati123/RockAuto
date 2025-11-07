@@ -1,7 +1,7 @@
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
-import { Product } from './ProductCard';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import svgPaths from '../imports/svg-sr8qy2cz33';
+import { Product } from '../ProductCard';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
+import svgPaths from '../../imports/svg-sr8qy2cz33';
 
 interface ProductDetailProps {
   product: Product;

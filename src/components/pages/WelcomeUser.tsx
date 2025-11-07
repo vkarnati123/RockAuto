@@ -1,6 +1,6 @@
 import { Car } from 'lucide-react';
-import { Product } from './ProductCard';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Product } from '../ProductCard';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 interface WelcomeUserProps {
   userName: string;

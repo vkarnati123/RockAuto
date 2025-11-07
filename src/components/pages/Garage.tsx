@@ -1,6 +1,6 @@
 import { Car, Plus, Trash2, Edit2, X, Check } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 export interface Vehicle {
   id: number;
@@ -253,7 +253,7 @@ export function Garage({ vehicles, onAddVehicle, onUpdateVehicle, onDeleteVehicl
 
       {/* Vehicle List */}
       <div className="grid grid-cols-1 gap-6">
-        {vehicles.length === 0 ? (
+        {vehicles.length === 0 && !showForm ? (
           <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
             <Car className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-gray-900 mb-2">No vehicles in your garage</h3>
@@ -265,7 +265,7 @@ export function Garage({ vehicles, onAddVehicle, onUpdateVehicle, onDeleteVehicl
               className="inline-flex items-center gap-2 bg-[#6366f1] text-white px-6 py-3 rounded-lg hover:bg-[#4f46e5] transition-colors"
             >
               <Plus className="w-5 h-5" />
-              Add Your First Vehicle
+              Add Your Vehicle
             </button>
           </div>
         ) : (

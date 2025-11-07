@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ArrowLeft, ChevronDown, ShoppingCart, GitCompare } from 'lucide-react';
-import { Product } from './ProductCard';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Slider } from './ui/slider';
-import { toast } from 'sonner@2.0.3';
+import { Product } from '../ProductCard';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { Slider } from '../ui/slider';
+import { toast } from 'sonner';
 
 interface AdvancedSearchProps {
   products: Product[];
