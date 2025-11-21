@@ -10,7 +10,7 @@ export default function NavBar() {
                 <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <img src="/logo.png" className="h-6" alt="RockAuto" />
                 </Link>
-                <div className="items-centerjustify-between bg-red-300 hidden w-full md:flex md:w-auto md:order-2" id="navbar-sticky">
+                <div className="items-center justify-between bg-red-300 hidden w-full md:flex md:w-auto md:order-2" id="navbar-sticky">
                     <SearchBar />
                 </div>
 

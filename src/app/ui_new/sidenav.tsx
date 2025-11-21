@@ -1,4 +1,3 @@
-"use client";
 import { Filter, Zap, Droplet, Lightbulb, Wrench, Gauge, Wind } from 'lucide-react';
 
 const categories = [
